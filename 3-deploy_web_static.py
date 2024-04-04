@@ -96,8 +96,7 @@ def do_deploy(archive_path):
 
 
 def deploy():
-    """_summary_
-    """
+    """Compresses, uploads and extracts static website content"""
     archive_path = do_pack()
     if archive_path is None:
         return False
