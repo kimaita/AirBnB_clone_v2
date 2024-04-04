@@ -47,11 +47,12 @@ def decompress(file_path, save_path):
         return False
     if run(f"tar -xzf {file_path} -C {save_path}").failed:
         return False
-
+    if run(f"rm {file_path}").failed:
+        return False
     static = os.path.join(save_path, 'web_static')
     if run(f"mv {static}/* {save_path}").failed:
         return False
-    if run(f"rm -rf {file_path} {static}").failed:
+    if run(f"rm -rf {static}").failed:
         return False
     return True
 
