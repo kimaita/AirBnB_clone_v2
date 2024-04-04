@@ -47,20 +47,23 @@ def decompress(file_path, save_path):
         return False
     if run(f"tar -xzf {file_path} -C {save_path}").failed:
         return False
-    if run(f"rm {file_path}").failed:
+    
+    static=os.path.join(save_path, 'web_static')
+    if run(f"mv {static}/* {save_path}").failed:
         return False
-
+    if run(f"rm -rf {file_path} {static}").failed:
+        return False
     return True
 
 
-def update_link(save_path):
+def update_link(target):
     """Creates a new symbolic link, linked to the extracted code
 
     Args:
         target (str): path to extracted code in `releases`
     """
     current = '/data/web_static/current'
-    target = os.path.join(save_path, 'web_static')
+
     if run(f"rm -rf {current}").failed:
         return False
     return run(f"ln -s {target} {current}")
