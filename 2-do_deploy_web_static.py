@@ -1,10 +1,32 @@
 #!/usr/bin/python3
 """Distributes an archive to web servers"""
-from fabric.api import env, put, run
+from datetime import datetime
+from fabric.api import local, env, put, run
 import os
 
 env.hosts = ['54.208.71.151', '100.25.34.99']
 env.user = 'ubuntu'
+
+
+def do_pack():
+    """Archives `web_static` into a tarball, saving it in `versions`
+
+    Returns:
+        str or None: path to archive or None if archiving failed
+    """
+    os.makedirs('versions', exist_ok=True)
+    timestmp = datetime.now().strftime('%Y%m%d%H%M%S')
+    filename = f"web_static_{timestmp}.tgz"
+    filepath = os.path.join('versions', filename)
+
+    try:
+        print(f'Packing web_static to {filepath}')
+        local(f"tar -cvzf {filepath} web_static")
+        tarsize = os.path.getsize(filepath)
+        print(f'web_static packed: {filepath} -> {tarsize}Bytes')
+        return filepath
+    except Exception:
+        return None
 
 
 def upload(file):
@@ -12,27 +34,16 @@ def upload(file):
 
     Args:
         file (str): path to the archive file
-
     """
-    return put(file, '/tmp')
+    try:
+        put(file, '/tmp')
+        return True
+    except Exception:
+        return False
 
 
-def decompress_path(file):
-    """Returns the extraction path for an archive.
-    This path will be:
-    `/data/web_static/releases/<archive filename without extension>`
-
-    Args:
-        file (_type_): archive name
-    """
-    releases = '/data/web_static/releases'
-    basename = os.path.basename(file)
-    filename = os.path.splitext(basename)[0]
-    return os.path.join(releases, filename, '')
-
-
-def decompress(file_path, save_path):
-    """Decompresses an archive saved in `/tmp` to releases
+def decompress(archive_name):
+    """Decompresses an archive saved in `/tmp` to `releases`
     and then deletes the archive
 
     Args:
@@ -42,32 +53,22 @@ def decompress(file_path, save_path):
     Returns:
         bool: False if any step fails, True otherwise
     """
-
-    if run(f"mkdir -p {save_path}").failed:
-        return False
-    if run(f"tar -xzf {file_path} -C {save_path}").failed:
-        return False
-    if run(f"rm {file_path}").failed:
-        return False
-    static = os.path.join(save_path, 'web_static')
-    if run(f"mv {static}/* {save_path}").failed:
-        return False
-    if run(f"rm -rf {static}").failed:
-        return False
-    return True
-
-
-def update_link(target):
-    """Creates a new symbolic link, linked to the extracted code
-
-    Args:
-        target (str): path to extracted code in `releases`
-    """
     current = '/data/web_static/current'
+    releases = '/data/web_static/releases'
+    file = archive_name.rsplit('.', maxsplit=1)[0]
+    save_path = os.path.join(releases, file, '')
 
-    if run(f"rm -rf {current}").failed:
+    try:
+        run(f"mkdir -p {save_path}")
+        run(f"tar -xzf /tmp/{archive_name} -C {save_path}")
+        run(f"rm /tmp/{archive_name}")
+        run(f"mv {save_path}/web_static/* {save_path}")
+        run(f"rm -rf {save_path}/web_static")
+        run(f"rm -rf {current}")
+        run(f"ln -s {save_path} {current}")
+        return True
+    except Exception:
         return False
-    return run(f"ln -s {target} {current}")
 
 
 def do_deploy(archive_path):
@@ -83,17 +84,11 @@ def do_deploy(archive_path):
     if not os.path.isfile(archive_path):
         return False
 
-    upload_res = upload(archive_path)
-    if upload_res.failed:
+    if not upload(archive_path):
         return False
 
-    save_path = decompress_path(archive_path)
-    upload_path = upload_res[0]
-
-    if not decompress(upload_path, save_path):
-        return False
-
-    if update_link(save_path).failed:
+    filename = archive_path.rsplit('/', maxsplit=1)[1]
+    if not decompress(filename):
         return False
 
     print("New version deployed!")

@@ -5,30 +5,22 @@ from fabric.api import local
 import os
 
 
-def get_timestamp():
-    """Returns the current datetime as a formatted string
-
-    Returns:
-        str: current datetime as YYYYMMDDHHMMSS
-    """
-    return datetime.now().strftime('%Y%m%d%H%M%S')
-
-
 def do_pack():
     """Archives `web_static` into a tarball, saving it in `versions`
-
 
     Returns:
         str or None: path to archive or None if archiving failed
     """
     os.makedirs('versions', exist_ok=True)
-    filename = f"web_static_{get_timestamp()}.tgz"
+    timestmp = datetime.now().strftime('%Y%m%d%H%M%S')
+    filename = f"web_static_{timestmp}.tgz"
     filepath = os.path.join('versions', filename)
 
-    res = local(f"tar -cvzf {filepath} web_static")
-    if res.succeeded:
+    try:
+        print(f'Packing web_static to {filepath}')
+        local(f"tar -cvzf {filepath} web_static")
         tarsize = os.path.getsize(filepath)
         print(f'web_static packed: {filepath} -> {tarsize}Bytes')
         return filepath
-
-    return None
+    except Exception:
+        return None
