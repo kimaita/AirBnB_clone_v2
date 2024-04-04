@@ -1,13 +1,13 @@
 #!/usr/bin/python3
 """Compresses and distributes a static website to web servers"""
 from datetime import datetime
-from fabric.api import local, env, put, run
+from fabric.api import local, env, put, run, runs_once
 import os
 
 env.hosts = ['54.208.71.151', '100.25.34.99']
 env.user = 'ubuntu'
 
-
+@runs_once
 def do_pack():
     """Archives `web_static` into a tarball, saving it in `versions`
 
