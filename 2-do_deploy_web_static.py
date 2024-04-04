@@ -26,7 +26,7 @@ def decompress_path(file):
         file (_type_): archive name
     """
     releases = '/data/web_static/releases'
-    basename=os.path.basename(file)
+    basename = os.path.basename(file)
     filename = os.path.splitext(basename)[0]
     return os.path.join(releases, filename, '')
 
@@ -42,7 +42,7 @@ def decompress(file_path, save_path):
     Returns:
         bool: False if any step fails, True otherwise
     """
-    
+
     if run(f"mkdir -p {save_path}").failed:
         return False
     if run(f"tar -xzf {file_path} -C {save_path}").failed:
@@ -84,7 +84,7 @@ def do_deploy(archive_path):
         return False
 
     save_path = decompress_path(archive_path)
-    upload_path=upload_res[0]
+    upload_path = upload_res[0]
 
     if not decompress(upload_path, save_path):
         return False
