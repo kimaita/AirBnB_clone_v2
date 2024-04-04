@@ -16,7 +16,8 @@ test_dir="$releases/test"
 
 mkdir -p "$test_dir"
 mkdir -p "$shared"
-ln -sfn "$test_dir" "$curr"
+rm -rf $curr
+ln -s "$test_dir" "$curr"
 chown -R ubuntu:ubuntu $data_dir
 
 test_page="
