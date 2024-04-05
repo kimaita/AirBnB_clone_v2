@@ -18,7 +18,6 @@ mkdir -p "$test_dir"
 mkdir -p "$shared"
 rm -rf $curr
 ln -s "$test_dir" "$curr"
-chown -R ubuntu:ubuntu $data_dir
 
 test_page="
 <!DOCTYPE html>
@@ -40,6 +39,7 @@ test_page="
 </body>
 </html>"
 echo "$test_page" > "$test_dir/index.html"
+chown -R ubuntu:ubuntu $data_dir
 
 location_block="location /hbnb_static {\n\t\talias $curr/;\n\t}\n"
 
