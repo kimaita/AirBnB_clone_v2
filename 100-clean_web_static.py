@@ -109,6 +109,15 @@ def deploy():
     return do_deploy(archive_path)
 
 
+@runs_once
+def clean_local(cmd):
+    local(cmd)
+
+
+def clean_remote(cmd):
+    run(cmd)
+
+
 def do_clean(number=0):
     """Deletes out-of-date archives, retaining `number` most-recent versions.
 
@@ -116,7 +125,7 @@ def do_clean(number=0):
     Args:
         number (int, optional): Number of files to keep. Defaults to 0.
     """
-    number = number+1 if not number else number
-    cmd = "cd {0} && ls | sort | head -n -{1} | xargs rm"
-    local(cmd.format(VERSIONS, number))
-    run(cmd.format(RELEASES, number))
+    number = int(number) or 1
+    cmd = "cd {0} && ls | sort | head -n -{1} | xargs -r rm"
+    clean_local(cmd.format(VERSIONS, number))
+    clean_remote(cmd.format(RELEASES, number))
