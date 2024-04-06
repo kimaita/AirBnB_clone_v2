@@ -2,7 +2,7 @@
 
 Exec { path => '/bin/:/sbin/:/usr/bin/:/usr/sbin/' }
 
-$data_dirs = ['/data', '/data/web_static', '/data/web_static/shared'
+$data_dirs = ['/data', '/data/web_static', '/data/web_static/shared',
 '/data/web_static/releases', '/data/web_static/releases/test']
 
 $curr_link = '/data/web_static/current'
@@ -50,11 +50,11 @@ file { $test_file:
     content => $index_page
 }
 
-location_block="location /hbnb_static {\n\t\talias ${curr_link}/;\n\t}\n"
+$location_block="location /hbnb_static {\n\t\talias ${curr_link}/;\n\t}\n"
 
 exec { 'set_route' :
-    command => sed -i "/server_name _;/a \\\t${location_block}" $conf_file
-    onlyif  => '! grep -Fq "location /hbnb_static {" $conf_file'
+    command => "sed -i \"/server_name _/a ${location_block}\" ${conf_file}",
+    onlyif  => "! grep -Fq \"location /hbnb_static {\" ${conf_file}"
 }
 
 service { 'nginx' :
