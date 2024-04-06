@@ -21,7 +21,9 @@ file { $data_dirs:
 
 file { $curr_link:
     ensure => 'link',
-    target => $data_dirs[4]
+    target => $data_dirs[4],
+    owner  => 'ubuntu',
+    group  => 'ubuntu'
 }
 
 $index_page = @(HOMEPAGE)
@@ -47,14 +49,16 @@ $index_page = @(HOMEPAGE)
 
 file { $test_file:
     ensure  => present,
-    content => $index_page
+    content => $index_page,
+    owner  => 'ubuntu',
+    group  => 'ubuntu'
 }
 
 $location_block="location /hbnb_static {\n\t\talias ${curr_link}/;\n\t}\n"
 
 exec { 'set_route' :
     command => "sed -i \"/server_name _/a ${location_block}\" ${conf_file}",
-    onlyif  => "! grep -Fq \"location /hbnb_static {\" ${conf_file}"
+    #onlyif  => "grep -Fq \"location /hbnb_static {\" ${conf_file}"
 }
 
 service { 'nginx' :
