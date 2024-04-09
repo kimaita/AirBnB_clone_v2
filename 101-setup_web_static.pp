@@ -54,10 +54,10 @@ file { $test_file:
     group   => 'ubuntu'
 }
 
-$location_block="location /hbnb_static {\n\t\talias ${curr_link}/;\n\t}\n"
+$location_block="location /hbnb_static {\talias ${curr_link}/;\t}"
 
 exec { 'set_route' :
-    command => "sed -i \"/server_name _;/a ${location_block}\" ${conf_file}",
+    command => "sed -i \"/server_name _;/a ${location_block}\" ${conf_file}"
 }
 
 service { 'nginx' :
