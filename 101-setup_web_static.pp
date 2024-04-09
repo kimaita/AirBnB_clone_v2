@@ -61,6 +61,6 @@ exec { 'set_route' :
 }
 
 service { 'nginx' :
-    ensure  => 'running'
+    ensure  => 'running',
     restart => 'nginx -s reload'
 }
