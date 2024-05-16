@@ -5,7 +5,7 @@ from datetime import datetime
 from fabric.api import local, env, put, run, runs_once
 import os
 
-env.hosts = ['54.208.71.151', '100.25.34.99']
+env.hosts = ['52.207.207.213', '54.242.186.218']
 env.user = 'ubuntu'
 
 RELEASES = '/data/web_static/releases'
