@@ -34,7 +34,7 @@ test_page="
 </head>
 <body>
 <h1>Hello World!</h1>
-<p>If you're seeing this something's wrong. 
+<p>Coming soon...</p> 
 <p><em>We are using nginx.</em></p>
 </body>
 </html>"
