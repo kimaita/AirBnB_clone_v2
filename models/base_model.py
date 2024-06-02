@@ -21,9 +21,9 @@ class BaseModel:
     """The BaseModel class from which future classes will be derived"""
 
     if models.storage_t == "db":
-        __table_args__ = {
-            "mysql_default charset": "latin1",
-        }
+        # __table_args__ = {
+        #     "mysql_default charset": "latin1",
+        # }
         id = Column(String(60), primary_key=True)
         created_at = Column(DateTime, default=datetime.now())
         updated_at = Column(DateTime, default=datetime.now())
