@@ -9,7 +9,7 @@
     <h1>States</h1>
     <ul>
         {% for state in states %}
-        <li>{{ state[0] }}: <b>{{ state[1] }}</b></li>
+        <li>{{ state.id }}: <b>{{ state.name }}</b></li>
         {% endfor %}
     </ul>
 </body>

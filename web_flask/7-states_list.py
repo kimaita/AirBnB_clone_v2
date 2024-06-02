@@ -16,9 +16,9 @@ def close_session():
 @app.route("/states_list", strict_slashes=False)
 def states():
     """Returns a list of all states in storage"""
-    states_dict = storage.all(State)
-    states = [(state["id"], state["name"]) for state in states_dict]
-    states.sort(key=lambda x: x[1])
+    all_states = storage.all(State)
+    states = sorted(all_states.values(), key=lambda state: state.name)
+
     return render_template("7-states_list.html", states=states)
 
 
