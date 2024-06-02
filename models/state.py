@@ -18,14 +18,12 @@ class State(BaseModel, Base):
     else:
         name = ""
 
-    def __init__(self, *args, **kwargs):
-        """initializes state"""
-        super().__init__(*args, **kwargs)
-
-    if models.storage_t != "db":
-
         @property
         def cities(self):
             """getter for list of city instances related to the state"""
             all_cities = models.storage.all(City)
             return [c for c in all_cities.values() if c.state_id == self.id]
+
+    def __init__(self, *args, **kwargs):
+        """initializes state"""
+        super().__init__(*args, **kwargs)
